@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\employer\EmployerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,4 +29,15 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::controller(DashboardController::class)->group(function () {
     Route::get('dashboard', 'index')->name('dashboard');
+});
+
+Route::controller(EmployerController::class)->group(function () {
+    Route::get('employerdashboard', 'index')->name('employerdashboard');
+});
+
+Route::controller(AdminController::class)->group(function () {
+    Route::get('show', 'index')->name('adminprofile');
+    Route::patch('details', 'update')->name('admindetails');
+    Route::patch('password', 'password')->name('adminpassword');
+    Route::patch('picture', 'picture')->name('adminpicture');
 });

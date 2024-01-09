@@ -26,9 +26,16 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
+        if (Auth::attempt($request->except('_token'))) {
+            $user = Auth::user();
 
-        if (Auth::attempt($request->except('_token'))){
-            return redirect()->route('dashboard');
+            if ($user->type === 'employer') {
+                return redirect()->route('employerdashboard');
+            } elseif ($user->type === 'job_seeker') {
+                return redirect()->route('job_seekerdashboard');
+            } else {
+                return redirect()->route('dashboard');
+            }
         } else {
             return back()->with(['failure' => 'Invalid login credentials']);
         }
@@ -51,13 +58,14 @@ class AuthController extends Controller
             'name' => ['required'],
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed'],
+            'type' => 'required|in:employer,job_seeker',
         ]);
 
         $data = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
-
+            'type' => $request->type,
         ];
 
         if (User::create($data)) {
@@ -91,5 +99,4 @@ class AuthController extends Controller
         Auth::logout();
         return redirect()->route('login')->with(['success' => 'Successfully logout']);
     }
-
 }
