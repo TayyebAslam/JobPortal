@@ -8,7 +8,7 @@
             <h1 class="h3 mb-3">Add Listing</h1>
         </div>
         <div class="col-6 text-end">
-            <a href="{{ route('showlisting')}}" class="btn btn-outline-primary">Back</a>
+            <a href="{{ route('showlisting') }}" class="btn btn-outline-primary">Back</a>
         </div>
     </div>
 
@@ -17,7 +17,7 @@
             <div class="card">
                 <div class="card-body">
                     @include('partials.alerts')
-                    <form action="" method="post" enctype="multipart/form-data">
+                    <form action="{{route('createlisting')}}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
                             <div class="col-md-4">
@@ -44,11 +44,11 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="vacancies_available" class="form-label">Vacancies Available!</label>
-                                    <input type="text" id="vacancies_available" name="vacancies_available"
-                                        class="form-control @error('vacancies_available') is-invalid @enderror"
-                                        value="{{ old('vacancies_available') }}" placeholder="Vacancies Available!">
-                                    @error('vacancies_available')
+                                    <label for="salary" class="form-label">Salary</label>
+                                    <input type="text" id="salary" name="salary"
+                                        class="form-control @error('salary') is-invalid @enderror"
+                                        value="{{ old('salary') }}" placeholder="Salary Range!">
+                                    @error('salary')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -58,13 +58,11 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="category_id" class="form-label">Category</label>
-                                    <select id="category_id" name="category_id"
-                                        class="form-select @error('category_id') is-invalid @enderror">
-                                        <option value="">Select a category!</option>
-
-                                    </select>
-                                    @error('category_id')
+                                    <label for="vacancies_available" class="form-label">Vacancies Available!</label>
+                                    <input type="text" id="vacancies_available" name="vacancies_available"
+                                        class="form-control @error('vacancies_available') is-invalid @enderror"
+                                        value="{{ old('vacancies_available') }}" placeholder="Vacancies Available!">
+                                    @error('vacancies_available')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -82,11 +80,11 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="mobile" class="form-label">Mobile</label>
-                                    <input type="text" id="mobile" name="mobile"
-                                        class="form-control @error('mobile') is-invalid @enderror"
-                                        value="{{ old('mobile') }}" placeholder="Mobile!">
-                                    @error('mobile')
+                                    <label for="contact_no" class="form-label">Contact No.</label>
+                                    <input type="text" id="contact_no" name="contact_no"
+                                        class="form-control @error('contact_no') is-invalid @enderror"
+                                        value="{{ old('contact_no') }}" placeholder="Contact No!">
+                                    @error('contact_no')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -130,34 +128,33 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="dob" class="form-label">Date of Birth</label>
-                                    <input type="date" id="dob" name="dob"
-                                        class="form-control @error('dob') is-invalid @enderror"
-                                        value="{{ old('dob') }}" placeholder="Date of Birth!">
-                                    @error('dob')
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea name="description" id="description" rows="2" class="form-control @error('description') is-invalid @enderror"
+                                        placeholder="Description!"></textarea>
+                                    @error('description')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="picture" class="form-label">Picture</label>
-                                    <input type="file" id="picture" name="picture"
-                                        class="form-control @error('picture') is-invalid @enderror"
-                                        value="{{ old('picture') }}" placeholder="Picture!">
-                                    @error('picture')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-3">
+                                <label for="picture" class="form-label">Picture</label>
+                                <input type="file" id="picture" name="picture"
+                                    class="form-control @error('picture') is-invalid @enderror"
+                                    value="{{ old('picture') }}" placeholder="Picture!">
+                                @error('picture')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="dob" class="form-label">Address</label>
+                                    <label for="address" class="form-label">Address</label>
                                     <textarea name="address" id="address" rows="2" class="form-control @error('address') is-invalid @enderror"
                                         placeholder="Address!"></textarea>
                                     @error('address')

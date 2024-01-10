@@ -17,37 +17,37 @@
             <div class="card">
                 <div class="card-body">
                     @include('partials.alerts')
-                    {{-- @if (count($contacts) > 0) --}}
+                    @if($listings && count($listings) > 0)
                         <table class="table table-bordered m-0">
-                            {{-- <thead>
+                            <thead>
                                 <tr>
                                     <th>Sr. No.</th>
-                                    <th>Name</th>
-                                    <th>Mobile</th>
+                                    <th>Company Name</th>
                                     <th>Email</th>
-                                    <th>Category</th>
+                                    <th>Contact No.</th>
+                                    <th>Vacancies</th>
                                     <th>Action</th>
                                 </tr>
-                            </thead> --}}
+                            </thead>
 
-                            {{-- <tbody>
-                                @foreach ($contacts as $contact)
+                            <tbody>
+                                @foreach ($listings as $listing)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $contact->first_name . $contact->last_name }}</td>
-                                        <td>{{ $contact->mobile_number }}</td>
-                                        <td>{{ $contact->email }}</td>
-                                        <td>{{ $contact->category->name }}</td>
+                                        <td>{{ $listing->company_name }}</td>
+                                        <td>{{ $listing->email }}</td>
+                                        <td>{{ $listing->contact_no }}</td>
+                                        <td>{{ $listing->vacancies_available }}</td>
                                         <td>
-                                            <a href="" class="btn btn-primary">Show</a>
+                                            <a href="{{ route('show', $listing) }}" class="btn btn-primary">Show</a>
                                         </td>
                                     </tr>
                                 @endforeach
-                            </tbody> --}}
+                            </tbody>
                         </table>
-                    {{-- @else --}}
+                     @else
                         <div class="alert alert-info mb-0">No record found!</div>
-                    {{-- @endif --}}
+                     @endif
                 </div>
             </div>
         </div>

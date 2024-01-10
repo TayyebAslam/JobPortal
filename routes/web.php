@@ -46,4 +46,6 @@ Route::controller(AdminController::class)->group(function () {
 Route::controller(EmployerListingController::class)->group(function(){
     Route::get('showlist', 'index')->name('showlisting');
     Route::get('create','create')->name('createlisting');
+    Route::post('create','store');
+    Route::get('{listing}/showlistings','show')->name('show');
 });
