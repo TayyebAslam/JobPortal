@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\admin\AdminController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\employer\EmployerController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\employer_listing\EmployerListingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,4 +41,9 @@ Route::controller(AdminController::class)->group(function () {
     Route::patch('details', 'update')->name('admindetails');
     Route::patch('password', 'password')->name('adminpassword');
     Route::patch('picture', 'picture')->name('adminpicture');
+});
+
+Route::controller(EmployerListingController::class)->group(function(){
+    Route::get('showlist', 'index')->name('showlisting');
+    Route::get('create','create')->name('createlisting');
 });

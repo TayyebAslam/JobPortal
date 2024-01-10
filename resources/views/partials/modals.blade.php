@@ -8,7 +8,7 @@
             </div>
             <div class="modal-body">
                 <div id="add-alert"></div>
-                <form action="{{ route('api.category.create') }}" method="post" id="add-form">
+                <form action="" method="post" id="add-form">
                     @csrf
                     <div class="mb-3">
                         <label for="add-name" class="form-label">Name</label>
