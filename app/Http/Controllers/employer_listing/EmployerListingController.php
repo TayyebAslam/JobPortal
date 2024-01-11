@@ -6,7 +6,10 @@ use App\Models\User;
 use App\Models\listing;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\employer_listing\EmployerListingController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\employer\EmployerController;
+// use App\Http\Controllers\employer_listing\EmployerListingController;
+
 
 class EmployerListingController extends Controller
 {
@@ -15,7 +18,9 @@ class EmployerListingController extends Controller
      */
     public function index()
     {
-        $listings = listing::all();
+        $user = auth()->user();
+        $listings = $user->listings;
+
         return view('employer.job_listings.show', [
             'listings' => $listings,
         ]);
@@ -32,7 +37,9 @@ class EmployerListingController extends Controller
         //     'listing' => $listing,
         // ];
 
-        return view('employer.job_listings.create');
+        return view('employer.job_listings.create', [
+            'listings' => listing::where('user_id', '=' , Auth::id())->get(),
+        ]);
     }
 
 
@@ -71,6 +78,7 @@ class EmployerListingController extends Controller
             'description' => $request->description,
             'address' => $request->address,
             'picture' => $name,
+            'user_id' => Auth::id(),
         ];
 
         if (listing::create($data)) {
@@ -94,24 +102,60 @@ class EmployerListingController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(listing $listing)
     {
-        //
+        return view('employer.job_listings.edit', [
+            'listing' => $listing,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, listing $listing)
     {
-        //
+
+        $request->validate([
+            'company_name' => ['required'],
+            'job_category' => ['required'],
+            'salary' => ['required'],
+            'vacancies_available' => ['required'],
+            'email' => ['required'],
+            'picture' => ['image', 'mimes:png,jpg,jpeg,webp'],
+            'contact_no' => ['required'],
+            'description' => ['required'],
+            'address' => ['required'],
+        ]);
+
+        $data = [
+            'company_name' => $request->company_name,
+            'job_category' => $request->job_category,
+            'salary' => $request->salary,
+            'vacancies_available' => $request->vacancies_available,
+            'email' => $request->email,
+            'contact_no' => $request->contact_no,
+            'description' => $request->description,
+            'address' => $request->address,
+            'user_id' => Auth::id(),
+        ];
+
+        if ($listing->update($data)) {
+            return back()->with(['success' => 'Successfully Updated!']);
+        } else {
+            return back()->with(['failure' => 'Failed to update!']);
+        }
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(listing $listing)
     {
-        //
+        if ($listing->delete()){
+            return redirect()->route('showlisting')->with(['success' => 'Successfully deleted!']);
+        } else {
+            return redirect()->route('showlisting')->with(['failure' => 'Failed to delete!']);
+        }
     }
 }

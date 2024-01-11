@@ -25,7 +25,7 @@
                                     <th>Company Name</th>
                                     <th>Email</th>
                                     <th>Contact No.</th>
-                                    <th>Vacancies</th>
+                                    <th>Vacancies</th>  
                                     <th>Action</th>
                                 </tr>
                             </thead>

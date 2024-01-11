@@ -36,7 +36,7 @@
         @include('partials.employersidebar')
 
         <div class="main">
-            @include('partials.topbar')
+            @include('partials.employertopbar')
 
             <main class="content">
                 <div class="container-fluid p-0">

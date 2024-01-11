@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('salary');
             $table->string('vacancies_available');
             $table->string('email');
+            $table->string('facebook')->nullable();
+            $table->string('instagram')->nullable();
+            $table->string('youtube')->nullable();
             $table->string('picture')->nullable();
             $table->string('contact_no');
             $table->string('description');

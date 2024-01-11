@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\employer;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\employer_listing\EmployerListingController;
+use Illuminate\Support\Facades\Auth;
+
+// use App\Http\Controllers\employer\EmployerController;
 
 class EmployerController extends Controller
 {
@@ -12,15 +16,17 @@ class EmployerController extends Controller
      */
     public function index()
     {
-       return view('employer.index');
+        return view('employer.index');
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function profile()
     {
-        //
+        return view('employer.profile', [
+            'user' => Auth::user(),
+        ]);
     }
 
     /**

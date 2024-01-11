@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\employer\EmployerController;
 use App\Http\Controllers\employer_listing\EmployerListingController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,6 +35,7 @@ Route::controller(DashboardController::class)->group(function () {
 
 Route::controller(EmployerController::class)->group(function () {
     Route::get('employerdashboard', 'index')->name('employerdashboard');
+    Route::get('profile', 'profile')->name('employerprofile');
 });
 
 Route::controller(AdminController::class)->group(function () {
@@ -48,4 +50,7 @@ Route::controller(EmployerListingController::class)->group(function(){
     Route::get('create','create')->name('createlisting');
     Route::post('create','store');
     Route::get('{listing}/showlistings','show')->name('show');
+    Route::get('{listing}/edit','edit')->name('editlisting');
+    Route::post('{listing}/edit','update');
+    Route::delete('{listing}/edit','destroy')->name('destroy');
 });
