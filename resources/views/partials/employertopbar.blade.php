@@ -1,23 +1,10 @@
-<style>
-    .app-search input {
-        width: 300px;
-        /* Set your desired width */
-        /* height: 40px; Set your desired height */
-        font-size: 15px;
-        /* Set your desired font size */
-    }
-</style>
+
+
 <nav class="navbar navbar-expand navbar-light navbar-bg">
     <a class="sidebar-toggle js-sidebar-toggle">
         <i class="hamburger align-self-center"></i>
     </a>
-    <div class="justify-content-center">
-        {{-- <a class="srh-btn fa fas-search"><i></i></a> --}}
-        <form class="mx-auto app-search">
-            <input type="text" id="search-bar" class="form-control form-control-lg d-inline" placeholder="Search and enter">
-            <i class="search-icon fas fa-search" style="font-size: 24px:"><a href=""></a></i>
-        </form>
-    </div>
+
 
 
     <div class="navbar-collapse collapse">
@@ -38,7 +25,7 @@
 
                 <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
                     @if (Auth::user()->picture)
-                    <img src="{{ asset('template/img/adminphotos/' . Auth::user()->picture) }}"
+                    <img src="{{ asset('template/img/employerphotos/' . Auth::user()->picture) }}"
                         class="avatar img-fluid rounded me-1" alt="{{ Auth::user()->name }}" /> <span
                         class="text-dark">{{ Auth::user()->name }}</span>
                 @else

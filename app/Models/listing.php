@@ -30,4 +30,9 @@ class listing extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function resumes()
+    {
+        return $this->hasMany(Resume::class);
+    }
 }

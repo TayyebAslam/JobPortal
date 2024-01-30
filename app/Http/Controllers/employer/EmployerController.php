@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\employer;
 
+use App\Models\Resume;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\employer_listing\EmployerListingController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\employer_listing\EmployerListingController;
 
 // use App\Http\Controllers\employer\EmployerController;
 
@@ -27,45 +28,49 @@ class EmployerController extends Controller
         return view('employer.profile', [
             'user' => Auth::user(),
         ]);
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function applications()
     {
-        //
+        // Get the authenticated employer user
+        $employer = Auth::user();
+
+        // Retrieve all listings associated with the employer
+        $listings = $employer->listings;
+
+        // Retrieve resumes for each listing
+        $resumes = collect();
+
+        foreach ($listings as $listing) {
+            $resumes = $resumes->merge($listing->resumes);
+        }
+
+        return view('employer.application', ['resumes' => $resumes]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+// In your EmployerController.php
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+public function acceptResume(Request $request, $id)
+{
+    $this->updateResumeStatus($id, 'accepted');
+    return redirect()->back()->with('success', 'Resume accepted successfully');
+}
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+public function rejectResume(Request $request, $id)
+{
+    $this->updateResumeStatus($id, 'rejected');
+    return redirect()->back()->with('success', 'Resume rejected successfully');
+}
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+private function updateResumeStatus($id, $status)
+{
+    $resume = Resume::find($id);
+    if ($resume) {
+        // Update the status in the database
+        $resume->status = $status;
+        $resume->save();
     }
+}
+
 }

@@ -53,20 +53,20 @@
                     <h5 class="card-title mb-0">Password</h5>
                 </div>
                 <div class="card-body h-100">
-                    <form action="{{ route('adminpassword') }}" method="post">
+                    <form action="{{ route('password') }}" method="post">
                         @csrf
                         @method('PATCH')
                         <div class="col-12">
                             <div class="mb-3">
                                 <label for="current_password" class="form-label">Current Password</label>
                                 <input type="password" name="current_password" id="current_password"
-                                class="form-control" placeholder="Enter your current password!">
+                                class="form-control @error('password') is-invalid @enderror" placeholder="Enter your current password!">
                                 @error('current_password')
                                 <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="password" class="form-label">New Password</label>
@@ -78,11 +78,15 @@
                                     @enderror
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="password_confirmation" class="form-label">Confirm Password</label>
                                     <input type="password" name="password_confirmation" id="password_confirmation"
-                                        class="form-control" placeholder="Confirm your password!">
+                                        class="form-control @error('password') is-invalid @enderror" placeholder="Confirm your password!">
+                                        @error('password_confirmation')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -103,7 +107,7 @@
                 <div class="card-body text-center">
                     <div id="picture-section">
                         @if ($user->picture)
-                            <img src="{{ asset('template/img/adminphotos/' . $user->picture) }}"
+                            <img src="{{ asset('template/img/employerphotos/' . $user->picture) }}"
                                 alt="Placeholder picture" class="img-fluid rounded-circle mb-2" width="200"
                                 height="200" />
                         @else
@@ -113,7 +117,7 @@
                         @endif
                     </div>
                     <div>
-                        <form action="" method="post" enctype="multipart/form-data">
+                        <form action="{{ route('picture') }}" method="post" enctype="multipart/form-data">
                             @csrf
                             @method('PATCH')
                             <div class="mb-3">
