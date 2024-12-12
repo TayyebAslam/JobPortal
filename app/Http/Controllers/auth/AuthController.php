@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -26,7 +27,10 @@ class AuthController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
-        if (Auth::attempt($request->except('_token'))) {
+
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
             if ($user->type === 'employer') {
@@ -64,12 +68,12 @@ class AuthController extends Controller
         $data = [
             'name' => $request->name,
             'email' => $request->email,
-            'password' => $request->password,
+            'password' => Hash::make($request->password), // Hash the password before saving
             'type' => $request->type,
         ];
 
         if (User::create($data)) {
-            return back()->with(['success' => 'Successfully registered!']);
+            return redirect()->route('login')->with(['success' => 'Successfully registered!']);
         } else {
             return back()->with(['failure' => 'Failed to register!']);
         }
@@ -97,6 +101,6 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login')->with(['success' => 'Successfully logout']);
+        return redirect()->route('login')->with(['success' => 'Successfully logged out']);
     }
 }
