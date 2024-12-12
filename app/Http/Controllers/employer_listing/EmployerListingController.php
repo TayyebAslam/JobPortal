@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\employer_listing;
 
 use App\Models\User;
-use App\Models\listing;
+use App\Models\Listing;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
-use App\Http\Controllers\employer\EmployerController;
-// use App\Http\Controllers\employer_listing\EmployerListingController;
-
 
 class EmployerListingController extends Controller
 {
@@ -23,10 +20,7 @@ class EmployerListingController extends Controller
         $user = auth()->user();
         $listings = $user->listings;
 
-        return view('employer.job_listings.show', [
-            'listings' => $listings,
-        ]);
-
+        return view('employer.job_listings.show', compact('listings'));
     }
 
     /**
@@ -34,43 +28,30 @@ class EmployerListingController extends Controller
      */
     public function create()
     {
-        // $data = [
-        //     'listings' => listing::all(),
-        //     'listing' => $listing,
-        // ];
-
-        return view('employer.job_listings.create', [
-            'listings' => listing::where('user_id', '=' , Auth::id())->get(),
-        ]);
+        return view('employer.job_listings.create');
     }
-
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-
         $request->validate([
-            'company_name' => ['required'],
-            'job_category' => ['required'],
-            'salary' => ['required'],
-            'vacancies_available' => ['required'],
-            'email' => ['required'],
-            'picture' => ['image', 'mimes:png,jpg,jpeg,webp'],
-            'contact_no' => ['required'],
-            'description' => ['required'],
-            'address' => ['required'],
+            'company_name' => 'required',
+            'job_category' => 'required',
+            'salary' => 'required',
+            'vacancies_available' => 'required',
+            'email' => 'required|email',
+            'contact_no' => 'required',
+            'description' => 'required',
+            'address' => 'required',
+            'picture' => 'nullable|image|mimes:png,jpg,jpeg,webp',
         ]);
 
-        if ($request->picture) {
-            $name = microtime(true) . $request->picture->hashName();
-            $request->picture->move(public_path('template/img/company_photos'), $name);
-        } else {
-            $name = null;
-        }
+        // Handle picture upload
+        $picturePath = $this->handlePictureUpload($request);
 
-        $data = [
+        $listing = Listing::create([
             'company_name' => $request->company_name,
             'job_category' => $request->job_category,
             'salary' => $request->salary,
@@ -79,161 +60,157 @@ class EmployerListingController extends Controller
             'contact_no' => $request->contact_no,
             'description' => $request->description,
             'address' => $request->address,
-            'picture' => $name,
+            'picture' => $picturePath,
             'user_id' => Auth::id(),
-        ];
+        ]);
 
-        if (listing::create($data)) {
-            return back()->with(['success' => 'Magic has been spelled!']);
-        } else {
-            return back()->with(['failure' => 'Magic has failed to spell!']);
-        }
-
+        return $listing
+            ? back()->with('success', 'Job listing created successfully!')
+            : back()->with('failure', 'Failed to create job listing!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(listing $listing)
+    public function show(Listing $listing)
     {
-        return view('employer.job_listings.index', [
-            'listing' => $listing,
-        ]);
+        return view('employer.job_listings.index', compact('listing'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(listing $listing)
+    public function edit(Listing $listing)
     {
-        return view('employer.job_listings.edit', [
-            'listing' => $listing,
-        ]);
+        return view('employer.job_listings.edit', compact('listing'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, listing $listing)
+    public function update(Request $request, Listing $listing)
     {
-
-
         $request->validate([
-            'company_name' => ['required'],
-            'job_category' => ['required'],
-            'salary' => ['required'],
-            'vacancies_available' => ['required'],
-            'email' => ['required'],
-            'picture' => ['image', 'mimes:png,jpg,jpeg,webp'],
-            'contact_no' => ['required'],
-
+            'company_name' => 'required',
+            'job_category' => 'required',
+            'salary' => 'required',
+            'vacancies_available' => 'required',
+            'email' => 'required|email',
+            'contact_no' => 'required',
+            'picture' => 'nullable|image|mimes:png,jpg,jpeg,webp',
         ]);
 
-        $data = [
+        // Handle picture upload if new picture is provided
+        $picturePath = $this->handlePictureUpload($request, $listing);
+
+        $listing->update([
             'company_name' => $request->company_name,
             'job_category' => $request->job_category,
             'salary' => $request->salary,
             'vacancies_available' => $request->vacancies_available,
             'email' => $request->email,
             'contact_no' => $request->contact_no,
-            'user_id' => Auth::id(),
-        ];
-
-        // if ($listing->$request->description == "" || $listing->$request->address == "") {
-            if ($listing->update($data)) {
-                return back()->with(['success' => 'Successfully Updated!']);
-            } else {
-                return back()->with(['failure' => 'Failed to update!']);
-            }
-        // }
-
-    }
-
-    public function add_desc(Request $request, listing $listing)
-    {
-        // $user = User::find(Auth::id());
-
-        $request->validate([
-            'description' => ['required'],
-            'address' => ['required'],
+            'picture' => $picturePath ?? $listing->picture,  // Only update if new picture is uploaded
         ]);
 
-        $data = [
-           'description' => $request->description,
-           'address' => $request->address,
-        //    'user_id' => Auth::id(),
-        ];
-        if ($listing->update($data)) {
-            return back()->with(['success' => 'Successfully Updated!']);
-        } else {
-            return back()->with(['failure' => 'Failed to update!']);
-        }
-    }
-
-    public function password(Request $request)
-    {
-        $user = User::find(Auth::id());
-        $request->validate([
-            'password' => ['required', 'confirmed'],
-            'current_password' => ['required'],
-        ]);
-
-        if (Hash::check($request->current_password, $user->password)) {
-            $data = [
-                'password' => Hash::make($request->password),
-            ];
-
-            if ($user->update($data)) {
-                return back()->with(['success' => 'Password Successfully Updated!']);
-            } else {
-                return back()->with(['failure' => 'Failed to update password!']);
-            }
-        } else {
-            return back()->withErrors(['current_password' => 'Current password does not match!']);
-        }
+        return back()->with('success', 'Job listing updated successfully!');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Add description and address to the listing.
+     */
+    public function add_desc(Request $request, Listing $listing)
+    {
+        $request->validate([
+            'description' => 'required',
+            'address' => 'required',
+        ]);
+
+        $listing->update([
+            'description' => $request->description,
+            'address' => $request->address,
+        ]);
+
+        return back()->with('success', 'Description and address updated successfully!');
+    }
+
+    /**
+     * Update employer password.
+     */
+    public function password(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|confirmed',
+        ]);
+
+        if (Hash::check($request->current_password, $user->password)) {
+            $user->update(['password' => Hash::make($request->password)]);
+
+            return back()->with('success', 'Password updated successfully!');
+        }
+
+        return back()->withErrors(['current_password' => 'Current password does not match.']);
+    }
+
+    /**
+     * Handle profile picture upload.
      */
     public function picture(Request $request)
     {
-        $user = User::find(Auth::id());
+        $user = Auth::user();
+
         $request->validate([
-            'picture' => ['required', 'image', 'mimes:png,jpg,jpeg,webp', 'max:10240'],
+            'picture' => 'required|image|mimes:png,jpg,jpeg,webp|max:10240',
         ]);
 
-        $old_picture_path = 'template/img/employerphotos/' . $user->picture;
-
-        if ($user->picture && File::exists(public_path($old_picture_path))) {
-            unlink(public_path($old_picture_path));
+        // Delete the old picture if it exists
+        $old_picture_path = public_path('template/img/employerphotos/' . $user->picture);
+        if ($user->picture && File::exists($old_picture_path)) {
+            unlink($old_picture_path);
         }
-        $new_file_name = "ACI-MAGICIANS" . microtime(true) . "." . $request->picture->getClientOriginalExtension();
 
-        $data = [
-            'picture' => $new_file_name,
-        ];
+        // Handle new picture upload
+        $new_picture_name = "ACI-MAGICIANS_" . microtime(true) . "." . $request->picture->getClientOriginalExtension();
+        $request->picture->move(public_path('template/img/employerphotos/'), $new_picture_name);
 
-        if ($request->picture->move(public_path('template/img/employerphotos/'), $new_file_name)) {
-            if ($user->update($data)) {
-                return back()->with(['success' => 'Picture Successfully updated!']);
-            } else {
-                return back()->with(['failure' => 'Failed to update!']);
-            }
-        } else {
-            return back()->with(['failure' => 'Magic has failed to spell!']);
-        }
+        $user->update(['picture' => $new_picture_name]);
+
+        return back()->with('success', 'Profile picture updated successfully!');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(listing $listing)
+    public function destroy(Listing $listing)
     {
-        if ($listing->delete()){
-            return redirect()->route('showlisting')->with(['success' => 'Successfully deleted!']);
-        } else {
-            return redirect()->route('showlisting')->with(['failure' => 'Failed to delete!']);
+        if ($listing->delete()) {
+            return redirect()->route('showlisting')->with('success', 'Job listing deleted successfully!');
         }
+
+        return redirect()->route('showlisting')->with('failure', 'Failed to delete job listing!');
+    }
+
+    /**
+     * Handle picture upload logic.
+     */
+    private function handlePictureUpload(Request $request, Listing $listing = null)
+    {
+        if ($request->hasFile('picture')) {
+            // Delete old picture if it exists for the listing
+            if ($listing && $listing->picture && File::exists(public_path('template/img/company_photos/' . $listing->picture))) {
+                unlink(public_path('template/img/company_photos/' . $listing->picture));
+            }
+
+            // Upload new picture to the public folder
+            $name = microtime(true) . $request->picture->hashName();
+            $request->picture->move(public_path('template/img/company_photos'), $name);
+
+            return $name;
+        }
+
+        return null;
     }
 }

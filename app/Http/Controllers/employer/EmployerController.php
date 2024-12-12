@@ -8,8 +8,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\employer_listing\EmployerListingController;
 
-// use App\Http\Controllers\employer\EmployerController;
-
 class EmployerController extends Controller
 {
     /**
@@ -28,9 +26,11 @@ class EmployerController extends Controller
         return view('employer.profile', [
             'user' => Auth::user(),
         ]);
-
     }
 
+    /**
+     * Display the applications (resumes) for each job listing.
+     */
     public function applications()
     {
         // Get the authenticated employer user
@@ -40,37 +40,45 @@ class EmployerController extends Controller
         $listings = $employer->listings;
 
         // Retrieve resumes for each listing
-        $resumes = collect();
-
-        foreach ($listings as $listing) {
-            $resumes = $resumes->merge($listing->resumes);
-        }
+        $resumes = $listings->flatMap(function ($listing) {
+            return $listing->resumes;
+        });
 
         return view('employer.application', ['resumes' => $resumes]);
     }
 
-// In your EmployerController.php
+    /**
+     * Accept a resume.
+     */
+    public function acceptResume($id)
+    {
+        return $this->updateResumeStatus($id, 'accepted');
+    }
 
-public function acceptResume(Request $request, $id)
-{
-    $this->updateResumeStatus($id, 'accepted');
-    return redirect()->back()->with('success', 'Resume accepted successfully');
-}
+    /**
+     * Reject a resume.
+     */
+    public function rejectResume($id)
+    {
+        return $this->updateResumeStatus($id, 'rejected');
+    }
 
-public function rejectResume(Request $request, $id)
-{
-    $this->updateResumeStatus($id, 'rejected');
-    return redirect()->back()->with('success', 'Resume rejected successfully');
-}
+    /**
+     * Update the resume status (accepted/rejected).
+     */
+    private function updateResumeStatus($id, $status)
+    {
+        // Find the resume by ID
+        $resume = Resume::find($id);
 
-private function updateResumeStatus($id, $status)
-{
-    $resume = Resume::find($id);
-    if ($resume) {
+        if (!$resume) {
+            return redirect()->back()->with('error', 'Resume not found');
+        }
+
         // Update the status in the database
         $resume->status = $status;
         $resume->save();
-    }
-}
 
+        return redirect()->back()->with('success', 'Resume ' . ucfirst($status) . ' successfully');
+    }
 }
